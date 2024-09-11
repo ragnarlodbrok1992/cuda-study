@@ -12,12 +12,15 @@ IF NOT EXIST build_nvcc mkdir build_nvcc
 
 pushd build_nvcc
 
+nvcc ../change_red.cu --lib --output-file change_red.obj
+
 nvcc ../main.cpp -o raylib-cuda-test.exe^
   -I %raylib_include_dir%^
   -L %raylib_lib_dir%^
   -Xcompiler "/EHsc /Zi /DEBUG:FULL /INCREMENTAL:NO /std:c++20"^
   -Xlinker "/SUBSYSTEM:console /ENTRY:mainCRTStartup"^
   -Xlinker "/NODEFAULTLIB:libcmt"^
+  -Xlinker "change_red.obj"^
   -l raylib -l gdi32 -l user32 -l shell32 -l winmm -l kernel32
 
 
