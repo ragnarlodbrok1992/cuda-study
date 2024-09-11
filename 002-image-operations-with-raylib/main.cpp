@@ -113,6 +113,8 @@ int main() {
   }
 
   // De-Initialization
+  stbi_image_free(data);
+  cudaFree(d_data);
   CloseWindow();
   return 0;
 }
