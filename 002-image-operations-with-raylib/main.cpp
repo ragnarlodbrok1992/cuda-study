@@ -77,13 +77,26 @@ int main() {
   cudaMalloc((void **)&d_data, image_size * sizeof(uint32_t));
 
   // TEST
-  changeRed(d_data, image_size, 255);
+  // changeRed(d_data, image_size, 255);
+  int newRed = 0;
 
   while (engine_running) {
     // Check for input
     if (IsKeyPressed(KEY_ESCAPE) || WindowShouldClose()) {
       engine_running = false;
     }
+
+    // Check UI input
+
+    // Copy current image data to CUDA
+    cudaMemcpy(d_data, data, image_size * sizeof(uint32_t), cudaMemcpyHostToDevice);
+
+    // Calculate new red channel - calling wrapper function for host
+    changeRed_host(d_data, x, y, newRed);
+
+    // Copy data back to host
+    // Pointers should cover changes in test_image memory - we don't have to do nothing here (assumption)
+    cudaMemcpy(data, d_data, image_size * sizeof(uint32_t), cudaMemcpyDeviceToHost);
 
     // Render frame
     BeginDrawing();
@@ -99,6 +112,7 @@ int main() {
 
     // After rendering stuff
     UnloadTexture(texture);
+    newRed++;
   }
 
   // De-Initialization
