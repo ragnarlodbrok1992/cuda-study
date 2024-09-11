@@ -1,0 +1,12 @@
+# C-tags
+tags
+
+# exe/obj/pdb
+*.exe
+*.obj
+*.pdb
+
+# exp/lib
+*.exp
+*.lib
+
