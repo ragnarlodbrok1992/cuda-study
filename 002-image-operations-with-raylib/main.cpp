@@ -6,18 +6,12 @@
 #include <stdint.h>
 #include <string.h>
 
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 #include "stb_image.h"
 #include "cuda_kernels.h"
 
 #define ASSET_IMAGE_PATH "assets/acorn.png"
-
-/*
-__global__ void changeRed(uint32_t *data, size_t size, int newRed) {
-  // printf("Hello from block %d, thread %d\n", blockIdx.x, threadIdx.x);
-  // printf("Block dimension: x - %d, y - %d\n", blockDim.x, blockDim.y);
-  printf("Hello from CUDA!\n");
-}
-*/
 
 int main() {
 
@@ -78,7 +72,7 @@ int main() {
 
   // TEST
   // changeRed(d_data, image_size, 255);
-  int newRed = 0;
+  float newRed = 0;
 
   while (engine_running) {
     // Check for input
@@ -92,7 +86,7 @@ int main() {
     cudaMemcpy(d_data, data, image_size * sizeof(uint32_t), cudaMemcpyHostToDevice);
 
     // Calculate new red channel - calling wrapper function for host
-    changeRed_host(d_data, x, y, newRed);
+    changeRed_host(d_data, x, y, (int) newRed);
 
     // Copy data back to host
     // Pointers should cover changes in test_image memory - we don't have to do nothing here (assumption)
@@ -100,19 +94,22 @@ int main() {
 
     // Render frame
     BeginDrawing();
-    ClearBackground(RAYWHITE);
-    DrawText("CUDA examples", 10, 10, 20, BLACK);
+      ClearBackground(RAYWHITE);
+      DrawText("CUDA examples", 10, 10, 20, BLACK);
 
-    // Render test image
-    // Creating texture on the fly
-    Texture2D texture = LoadTextureFromImage(test_image);
-    DrawTexture(texture, 20, 10, WHITE);
+      // Draw GUI elements
+      GuiSlider({20, 40, 200, 20}, "RED channel - 0", "255", &newRed, 0, 255);
+
+      // Render test image
+      // Creating texture on the fly
+      Texture2D texture = LoadTextureFromImage(test_image);
+      DrawTexture(texture, 40, 10, WHITE);
 
     EndDrawing();
 
     // After rendering stuff
     UnloadTexture(texture);
-    newRed++;
+    // newRed++;
   }
 
   // De-Initialization
