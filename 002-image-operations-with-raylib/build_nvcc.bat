@@ -15,7 +15,7 @@ pushd build_nvcc
 nvcc ../main.cpp -o raylib-cuda-test.exe^
   -I %raylib_include_dir%^
   -L %raylib_lib_dir%^
-  -Xcompiler "/EHsc /Zi /DEBUG:FULL /INCREMENTAL:NO"^
+  -Xcompiler "/EHsc /Zi /DEBUG:FULL /INCREMENTAL:NO /std:c++20"^
   -Xlinker "/SUBSYSTEM:console /ENTRY:mainCRTStartup"^
   -Xlinker "/NODEFAULTLIB:libcmt"^
   -l raylib -l gdi32 -l user32 -l shell32 -l winmm -l kernel32
