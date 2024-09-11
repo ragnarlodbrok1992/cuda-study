@@ -7,14 +7,17 @@
 #include <string.h>
 
 #include "stb_image.h"
-
-// #define IMAGE_WIDTH 581
-// #define IMAGE_HEIGHT 394
-// #define RAYLIB_INTERNAL_PIXEL_FORMAT 7
+#include "cuda_kernels.h"
 
 #define ASSET_IMAGE_PATH "assets/acorn.png"
 
-// static unsigned char TEST_IMAGE_DATA[IMAGE_WIDTH * IMAGE_HEIGHT * RAYLIB_INTERNAL_PIXEL_FORMAT];
+/*
+__global__ void changeRed(uint32_t *data, size_t size, int newRed) {
+  // printf("Hello from block %d, thread %d\n", blockIdx.x, threadIdx.x);
+  // printf("Block dimension: x - %d, y - %d\n", blockDim.x, blockDim.y);
+  printf("Hello from CUDA!\n");
+}
+*/
 
 int main() {
 
@@ -47,17 +50,6 @@ int main() {
   // Main loop
   bool engine_running = true;
 
-  // Loading image - raw data into memory
-  // Image test_image = LoadImage("assets/acorn.png"); // @TODO: This path should be calculated on runtime
-  // int test_image_filesize = 0;
-  // unsigned char* pointer_to_exported_image = ExportImageToMemory(test_image, ".png", &test_image_filesize);
-
-  // memcpy(&TEST_IMAGE_DATA[0],
-  //         ExportImageToMemory(test_image, ".png", &test_image_filesize),
-  //         test_image_filesize);
-
-  // UnloadImage(test_image);
-
   int x, y, n;
   uint32_t *data = (uint32_t *)stbi_load(ASSET_IMAGE_PATH, &x, &y, &n, 4);
 
@@ -71,14 +63,7 @@ int main() {
   TraceLog(LOG_INFO, "Image channels: %d", n);
   TraceLog(LOG_INFO, "Image size:     %d", image_size);
 
-  /*
-  for (size_t i = 0; i < image_size; i++) {
-    TraceLog(LOG_INFO, "Pixel %d: 0x%08x", i, data[i]);
-  }
-  */
-
   // Test image loading from RAW data
-  // Image test_image = LoadImageRaw(ASSET_IMAGE_PATH, x, y, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
   Image test_image = {
     .data = data,
     .width = x,
@@ -86,6 +71,13 @@ int main() {
     .mipmaps = 1,
     .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8
   };
+
+  // Allocating stuff for CUDA
+  uint32_t *d_data;
+  cudaMalloc((void **)&d_data, image_size * sizeof(uint32_t));
+
+  // TEST
+  changeRed(d_data, image_size, 255);
 
   while (engine_running) {
     // Check for input
